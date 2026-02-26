@@ -217,9 +217,9 @@ const TransformStage = ({
   points: [number, number][];
   color?: string;
 }) => {
-  const size = 200;
-  const padding = 40;
-  const scale = (size - padding * 2) / 4; // Scale factor for visualization
+  const size = 110; // Even smaller for mobile landscape
+  const padding = 20;
+  const scale = (size - padding * 2) / 4; 
 
   const transformedPoints = useMemo(() => {
     return points.map(([x, y]) => {
@@ -237,10 +237,10 @@ const TransformStage = ({
   ];
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6 bg-zinc-900/40 rounded-3xl border border-zinc-800/50 backdrop-blur-sm">
+    <div className="flex flex-col items-center gap-1 p-2 bg-zinc-900/40 rounded-xl border border-zinc-800/50 backdrop-blur-sm">
       <div className="text-center">
-        <h3 className="text-lg font-semibold text-zinc-100">{label}</h3>
-        <p className="text-xs font-mono text-zinc-500 uppercase tracking-tighter">{subLabel}</p>
+        <h3 className="text-[10px] font-semibold text-zinc-100 leading-tight">{label}</h3>
+        <p className="text-[8px] font-mono text-zinc-500 uppercase tracking-tighter">{subLabel}</p>
       </div>
       
       <div className="relative">
@@ -343,26 +343,19 @@ export default function App() {
   const stage4 = matrixA; // After U * S * V^T (Rotation)
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-300 p-8 font-sans selection:bg-blue-500/30">
-      <div className="max-w-7xl mx-auto space-y-12">
+    <div className="min-h-screen bg-zinc-950 text-zinc-300 p-2 sm:p-4 md:p-8 font-sans selection:bg-blue-500/30 overflow-x-hidden">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 md:space-y-12">
         
-        {/* Header */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-800 pb-8">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <Layers className="w-6 h-6 text-blue-500" />
-              </div>
-              <h1 className="text-4xl font-bold tracking-tight text-white">SVD Visualizer</h1>
+        {/* Header - Extremely compact on small screens */}
+        <header className="flex flex-row items-center justify-between gap-4 border-b border-zinc-800 pb-2 sm:pb-4 md:pb-8">
+          <div className="flex items-center gap-2">
+            <div className="p-1 bg-blue-500/10 rounded-lg">
+              <Layers className="w-4 h-4 text-blue-500" />
             </div>
-            <p className="text-zinc-500 max-w-2xl">
-              Singular Value Decomposition decomposes any matrix <span className="font-mono text-zinc-300">A</span> into 
-              <span className="font-mono text-zinc-300"> U Σ Vᵀ</span>. 
-              Physically, this represents a rotation, a scaling, and another rotation.
-            </p>
+            <h1 className="text-lg sm:text-2xl md:text-4xl font-bold tracking-tight text-white">SVD Visualizer</h1>
           </div>
           
-          <div className="flex items-center gap-4 px-4 py-2 bg-zinc-900/50 rounded-full border border-zinc-800 text-xs font-mono">
+          <div className="hidden md:flex items-center gap-4 px-4 py-2 bg-zinc-900/50 rounded-full border border-zinc-800 text-[10px] font-mono">
             <span className="flex items-center gap-1.5 text-zinc-400">
               <RotateCcw className="w-3 h-3" /> Rotation (Vᵀ)
             </span>
@@ -377,126 +370,105 @@ export default function App() {
           </div>
         </header>
 
-        {/* Control Section */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Main Layout: Split in landscape (sm breakpoint) */}
+        <main className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 items-start">
           
-          {/* Left: Matrix A */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="flex items-center gap-2 mb-2">
-              <Settings2 className="w-4 h-4 text-blue-500" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Original Transformation</h2>
-            </div>
-            <MatrixInput 
-              label="Matrix A" 
-              value={matrixA} 
-              onChange={handleAChange} 
-              color="blue"
-            />
-            <div className="p-4 bg-zinc-900/30 rounded-2xl border border-zinc-800/50 text-sm italic text-zinc-500">
-              Modify the values above to see how the decomposition updates in real-time.
-            </div>
-          </div>
-
-          {/* Middle: Arrow */}
-          <div className="hidden lg:flex lg:col-span-1 h-full items-center justify-center">
-            <ArrowRight className="w-8 h-8 text-zinc-800" />
-          </div>
-
-          {/* Right: SVD Components */}
-          <div className="lg:col-span-7 space-y-8">
-            <div className="flex items-center gap-2 mb-2">
-              <Grid3X3 className="w-4 h-4 text-purple-500" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-zinc-400">SVD Decomposition</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-4">
-                <RotationSlider 
-                  label="U Angle" 
-                  angle={angleU} 
-                  onChange={handleAngleUChange} 
-                  color="purple"
-                />
-                <MatrixDisplay label="U Matrix" value={svd.u} color="purple" />
+          {/* Left Column: Controls */}
+          <div className="space-y-4 sm:space-y-8">
+            {/* Matrix A */}
+            <section className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Settings2 className="w-3 h-3 text-blue-500" />
+                <h2 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Original Matrix A</h2>
               </div>
+              <MatrixInput 
+                label="Matrix A" 
+                value={matrixA} 
+                onChange={handleAChange} 
+                color="blue"
+              />
+            </section>
 
-              <div className="space-y-4">
-                <SigmaInput 
-                  value={svd.s} 
-                  onChange={handleSigmaChange} 
-                />
-                <div className="p-3 rounded-xl border border-emerald-500/10 bg-zinc-900/20 text-center font-mono text-xs text-zinc-500">
-                  Scaling Factors
+            {/* SVD Components */}
+            <section className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Grid3X3 className="w-3 h-3 text-purple-500" />
+                <h2 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">SVD Components</h2>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <RotationSlider label="U Angle" angle={angleU} onChange={handleAngleUChange} color="purple" />
+                    <MatrixDisplay label="U" value={svd.u} color="purple" />
+                  </div>
+                  <div className="space-y-2">
+                    <RotationSlider label="Vᵀ Angle" angle={angleVT} onChange={handleAngleVTChange} color="amber" />
+                    <MatrixDisplay label="Vᵀ" value={svd.vt} color="amber" />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <SigmaInput value={svd.s} onChange={handleSigmaChange} />
                 </div>
               </div>
+            </section>
+          </div>
 
-              <div className="space-y-4">
-                <RotationSlider 
-                  label="Vᵀ Angle" 
-                  angle={angleVT} 
-                  onChange={handleAngleVTChange} 
-                  color="amber"
-                />
-                <MatrixDisplay label="Vᵀ Matrix" value={svd.vt} color="amber" />
+          {/* Right Column: Visualization Pipeline */}
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2">
+                <Layers className="w-3 h-3 text-blue-500" />
+                Pipeline
+              </h2>
+              <div className="text-[8px] font-mono text-zinc-500">
+                x → Vᵀx → ΣVᵀx → UΣVᵀx
               </div>
             </div>
-            
-            <div className="flex items-start gap-3 p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 text-xs text-emerald-500/80">
-              <Info className="w-4 h-4 shrink-0 mt-0.5" />
+
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
+              <TransformStage 
+                matrix={stage1} 
+                label="Original" 
+                subLabel="Identity"
+                points={points}
+                color="#71717a"
+              />
+              <TransformStage 
+                matrix={stage2} 
+                label="Step 1" 
+                subLabel="Apply Vᵀ"
+                points={points}
+                color="#f59e0b"
+              />
+              <TransformStage 
+                matrix={stage3} 
+                label="Step 2" 
+                subLabel="Apply Σ"
+                points={points}
+                color="#10b981"
+              />
+              <TransformStage 
+                matrix={stage4} 
+                label="Step 3" 
+                subLabel="Apply U"
+                points={points}
+                color="#8b5cf6"
+              />
+            </div>
+
+            <div className="hidden sm:flex items-start gap-2 p-3 bg-zinc-900/30 rounded-xl border border-zinc-800/50 text-[8px] text-zinc-500">
+              <Info className="w-2 h-2 shrink-0 mt-0.5" />
               <p>
-                U and Vᵀ are now controlled via rotation angles to ensure they remain orthogonal. 
-                Modifying the original matrix A will automatically update these angles.
+                Pipeline shows sequential SVD application.
               </p>
             </div>
-          </div>
-        </section>
-
-        {/* Visualization Section */}
-        <section className="space-y-8 pt-8">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <Layers className="w-5 h-5 text-blue-500" />
-              Transformation Pipeline
-            </h2>
-            <div className="text-xs font-mono text-zinc-500">
-              Order: x → Vᵀx → ΣVᵀx → UΣVᵀx
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-            <TransformStage 
-              matrix={stage1} 
-              label="Original" 
-              subLabel="Identity Matrix"
-              points={points}
-              color="#71717a"
-            />
-            <TransformStage 
-              matrix={stage2} 
-              label="Step 1: Rotate" 
-              subLabel="Apply Vᵀ"
-              points={points}
-              color="#f59e0b"
-            />
-            <TransformStage 
-              matrix={stage3} 
-              label="Step 2: Scale" 
-              subLabel="Apply Σ"
-              points={points}
-              color="#10b981"
-            />
-            <TransformStage 
-              matrix={stage4} 
-              label="Step 3: Rotate" 
-              subLabel="Apply U"
-              points={points}
-              color="#8b5cf6"
-            />
-          </div>
-        </section>
+          </section>
+        </main>
 
         {/* Footer Info */}
-        <footer className="pt-12 border-t border-zinc-800 text-center text-zinc-600 text-sm">
+        <footer className="pt-4 border-t border-zinc-800 text-center text-zinc-600 text-[8px]">
           <p>Built for Matrix Theory Demonstration • 2026</p>
         </footer>
       </div>
