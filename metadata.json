@@ -1,0 +1,5 @@
+{
+  "name": "SVD Visualizer",
+  "description": "An interactive demonstration of Singular Value Decomposition (SVD) for 2x2 matrices, showing how any linear transformation can be decomposed into rotation, scaling, and rotation.",
+  "requestFramePermissions": []
+}
